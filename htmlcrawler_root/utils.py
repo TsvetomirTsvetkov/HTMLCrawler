@@ -14,6 +14,19 @@ HTML_CRAWLER = r'''
 
 '''
 
+MENU = r'''
+Choose a command:
+[1] Create Tree Model
+[2] Search by relative path
+[3] Change Node
+[4] Copy Node
+[5] Save to file
+[6] Visualize
+
+[9] Еxit
+
+'''
+
 
 def get_file_extension(html_file_path):
     flag = False
@@ -43,41 +56,16 @@ def load_file(html_file_path):
 def html_crawler_window():
     os.system('clear')
     print(HTML_CRAWLER)
+    print(MENU)
 
 
-def input_command():  # TODO: Think of way to improve
+def input_command():
     ALL_COMMANDS = ['1', '2', '3', '4', '5', '6', '9']
 
-    command = input(
-        r'''
-        Choose a command:
-        [1] Create Tree Model
-        [2] Search by relative path
-        [3] Change Node
-        [4] Copy Node
-        [5] Save to file
-        [6] Visualize
-
-        [9] Еxit
-
-        Input: '''
-    )
+    command = input('Input: ')
 
     while command not in ALL_COMMANDS:
         html_crawler_window()
         print(f'Your last command was not recognized.\n')
-        command = input(
-            r'''
-            Choose a command:
-            [1] Create Tree Model
-            [2] Search by relative path
-            [3] Change Node
-            [4] Copy Node
-            [5] Save to file
-            [6] Visualize
-
-            [9] Еxit
-
-            Input: '''
-        )
+        command = input('Input: ')
     return command
