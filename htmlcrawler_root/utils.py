@@ -1,6 +1,8 @@
 # External imports
 import os
 
+from enum import Enum
+
 # Internal imports
 
 
@@ -26,6 +28,13 @@ Choose a command:
 [9] Еxit
 
 '''
+
+
+# Helper class for the different data types
+class Tag(Enum):
+    ENTRY_TAG = 1
+    EXIT_TAG = 2
+    NOT_TAG = 3
 
 
 def get_file_extension(html_file_path):
@@ -69,3 +78,14 @@ def input_command():
         print(f'Your last command was not recognized.\n')
         command = input('Input: ')
     return command
+
+
+def get_html_element_type(tag):
+    if len(tag) >= 3:
+        if tag[:2] == '</' and tag[-1] == '>':
+            return Tag.EXIT_TAG
+        elif tag[0] == '<' and tag[-1] == '>':
+            return Tag.ENTRY_TAG
+        else:
+            return Tag.NOT_TAG
+    return Tag.NOT_TAG
