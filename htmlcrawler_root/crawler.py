@@ -3,21 +3,16 @@ from htmlcrawler_root.utils import get_html_element_type, Tag
 
 
 class Node:
-    def __init__(self, data):
+    def __init__(self, data, parent=None):
         self.data = data
+        self.parent = parent
         self.children = []
 
     def add_child(self, child):
-        self.children.append(Node(child))
+        self.children.append(Node(child, self))
 
     def __repr__(self):
         return f'{self.data} : {self.children}'
-
-    # def remove_child(self, child):
-    #     try:
-    #         self.children.remove(child)
-    #     except Exception:
-    #         print(f"{child} couldn't be removed as it wasn't found.")
 
 
 # class Tree:
@@ -85,26 +80,30 @@ class Crawler:
         self.file_data = file_data
         self.root = None
 
+    def _recursive_tree(self, root, contents_list):
+        if len(contents_list) == 0:
+            return root
+        elif get_html_element_type(contents_list[0]) == Tag.ENTRY_TAG:
+            root.add_child(contents_list[0])
+            return self._recursive_tree(root.children[-1], contents_list[1:])
+        elif get_html_element_type(contents_list[0]) == Tag.NOT_TAG:
+            root.add_child(contents_list[0])
+            return self._recursive_tree(root, contents_list[1:])
+        elif get_html_element_type(contents_list[0]) == Tag.EXIT_TAG:
+            if root.parent is not None:
+                return self._recursive_tree(root.parent, contents_list[1:])
+            else:
+                return self._recursive_tree(root, contents_list[1:])
+
     def create_tree(self):
         print('Creating tree from data...')
 
         contents_list = html_parser(self.file_data)
 
-        self.root = Node(contents_list[0])
-        level = 0
-        child_index = 0
-
-        for element in contents_list[1:]:
-            if get_html_element_type(element) == Tag.ENTRY_TAG:
-                self.root.add_child(element)
-                level += 1
-                child_index += 1
-            elif get_html_element_type(element) == Tag.EXIT_TAG:
-                pass
-            else:
-                pass
+        self.root = self._recursive_tree(Node(contents_list[0], None), contents_list[1:])
 
         print(self.root)
+
         input('\nPress any key to continue...\n')
 
     def search_relative_path(self):
@@ -126,8 +125,6 @@ class Crawler:
     def visualize(self):
         print('Visualizing...')
         input()
-
-
 
 
 print(html_parser('/home/sktuan/Documents/HTMLCrawler/test_data/test.html'))
